@@ -27,15 +27,7 @@ public class Card : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-        CardManager mrs = GameObject.Find("Board").GetComponent<CardManager>();
-
-        if (mrs == null)
-        {
-            Debug.LogError("Board doesn't exist you fool!");
-            return;
-        }
-
         MeshRenderer mr = this.gameObject.GetComponent<MeshRenderer>();
-        mr.material.mainTexture = mrs.getCardTexture(cardID);
+        mr.material.mainTexture = CardManager.getCardTexture(cardID);
 	}
 }

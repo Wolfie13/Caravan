@@ -7,7 +7,7 @@ public class CardManager : MonoBehaviour {
     private static Texture2D[] CARD_TEXTURES = new Texture2D[53];
 
 	// Use this for initialization
-	void Start () 
+	public CardManager()
     {
         Texture2D[] LoadedCards = Resources.LoadAll<Texture2D>("Cards/");
         foreach (Texture2D tex in LoadedCards)
@@ -20,13 +20,12 @@ public class CardManager : MonoBehaviour {
         }
 	}
 
-    public Texture2D getCardTexture(int cardID)
+    public static Texture2D getCardTexture(int cardID)
     {
         if (cardID > CARD_TEXTURES.Length && cardID < 0)
         {
             return null;
         }
-
         return CARD_TEXTURES[cardID];
     }
 }

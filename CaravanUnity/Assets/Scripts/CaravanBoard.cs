@@ -10,9 +10,14 @@ public class CaravanBoard : MonoBehaviour
         cardPrefab = Resources.Load<GameObject>("Card");
     }
 
+    [SerializeField]
+    public GameObject[] boardPositions;
+
     private Dictionary<int, List<Card>> caravans;
     private List<Card>[] decks = new List<Card>[2];
     private List<Card>[] hands = new List<Card>[2];
+
+    private bool dirty = true;
 
     private static List<int> cardStack(List<Card> cardObjects)
     {
@@ -27,14 +32,10 @@ public class CaravanBoard : MonoBehaviour
     public Dictionary<int, List<int>> getGameState()
     {
         Dictionary<int, List<int>> result = new Dictionary<int, List<int>>();
-        foreach (int stackNum in caravans.Keys)
+        for (int i = 0; i != 10; i++ )
         {
-            result.Add(stackNum, cardStack(caravans[stackNum]));
+            result.Add(i, cardStack(getStackById(i)));
         }
-        result.Add(6, cardStack(hands[0]));
-        result.Add(7, cardStack(hands[1]));
-        result.Add(8, cardStack(decks[0]));
-        result.Add(9, cardStack(decks[1]));
         return result;
     }
 
@@ -78,6 +79,7 @@ public class CaravanBoard : MonoBehaviour
         Card cardToMove = source[position];
         source.RemoveAt(position);
         dest.Add(cardToMove);
+        dirty = true;
     }
 
     void Start()
@@ -103,6 +105,34 @@ public class CaravanBoard : MonoBehaviour
             Debug.Log("Moved?");
             makeMove(9, 0, 7);
         }
+
+        if (dirty)
+        {
+            positionCards();
+            dirty = false;
+        }
+    }
+
+    void organizeStack(List<Card> stack, int num)
+    {
+        for (int i = 0; i != stack.Count; i++)
+        {
+            stack[i].transform.parent = boardPositions[num].transform;
+            stack[i].transform.localPosition = new Vector3(0, i * 0.02f, 0);
+        }
+    }
+
+    //Moves card objects into their proper positions.
+    void positionCards()
+    {
+        foreach (int stackNum in caravans.Keys)
+        {
+            organizeStack(caravans[stackNum], stackNum);
+        }
+        organizeStack(hands[0], 6);
+        organizeStack(hands[1], 7);
+        organizeStack(decks[0], 8);
+        organizeStack(decks[1], 9);
     }
 
     private static Transform getCard(int idx)
