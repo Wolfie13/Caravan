@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CaravanBoard : MonoBehaviour
@@ -158,13 +159,15 @@ public class CaravanBoard : MonoBehaviour
             result.Add(newCard.GetComponent<Card>());
         }
 
+
+		//What card does this add?
         newCard = getCard(1);
         newCard.gameObject.transform.parent = parentGroup.transform;
 
         result.Add(newCard.GetComponent<Card>());
 
         // Moves the whole deck of cards
-        parentGroup.transform.position = new Vector3(Random.Range(0, 10), 0, Random.Range(0, 10));
+		parentGroup.transform.position = new Vector3(UnityEngine.Random.Range(0, 10), 0, UnityEngine.Random.Range(0, 10));
 
         return Shuffle(result);
     }
@@ -172,9 +175,9 @@ public class CaravanBoard : MonoBehaviour
     private static List<Card> Shuffle(List<Card> deck)
     {
         List<Card> result = new List<Card>(54);
+		System.Random rand = new System.Random(Guid.NewGuid().GetHashCode());
         while (deck.Count != 0)
         {
-            System.Random rand = new System.Random();
             int randomCard = rand.Next(0, deck.Count);
             Card removedCard = deck[randomCard];
             deck.RemoveAt(randomCard);
