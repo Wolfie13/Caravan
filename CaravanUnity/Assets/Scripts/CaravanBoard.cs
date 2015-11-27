@@ -20,6 +20,11 @@ public class CaravanBoard : MonoBehaviour
 
     private bool dirty = true;
 
+    public const int PLAYER_HAND = 6;
+    public const int AI_HAND = 7;
+    public const int PLAYER_DECK = 8;
+    public const int AI_DECK = 9;
+
     private static List<int> cardStack(List<Card> cardObjects)
     {
         List<int> result = new List<int>(cardObjects.Count);
@@ -72,15 +77,41 @@ public class CaravanBoard : MonoBehaviour
         return stack;
     }
 
-    public void makeMove(int stack, int position, int destination)
+    public void makeMove(int stack, int srcPos, int destination, int destPos)
     {
         List<Card> source = getStackById(stack);
         List<Card> dest = getStackById(destination);
 
-        Card cardToMove = source[position];
-        source.RemoveAt(position);
+        Card cardToMove = source[srcPos];
+        source.RemoveAt(srcPos);
         dest.Add(cardToMove);
+        //TODO: add to dest at DestPos
         dirty = true;
+    }
+
+    public void discard(int stack, int idx)
+    {
+        Destroy(getStackById(stack)[idx]);
+        getStackById(stack).RemoveAt(idx);
+    }
+
+    public void disband(int stack)
+    {
+        foreach (Transform child in boardPositions[stack].transform)
+        {
+            Destroy(child);
+        }
+        getStackById(stack).Clear();
+    }
+
+    public int caravanValue(int stack)
+    {
+        int result = 0;
+        foreach (Card c in getStackById(stack))
+        {
+            result += c.caravanValue();
+        }
+        return result;
     }
 
     void Start()
@@ -101,12 +132,6 @@ public class CaravanBoard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
-        {
-            Debug.Log("Moved?");
-            makeMove(9, 0, 7);
-        }
-
         if (dirty)
         {
             positionCards();

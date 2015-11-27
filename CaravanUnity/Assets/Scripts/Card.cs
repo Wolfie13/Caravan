@@ -6,6 +6,11 @@ public class Card : MonoBehaviour
 {
 	[SerializeField] public int cardID;
 
+    public int caravanValue()
+    {
+        return getCaravanValue(this.cardID);
+    }
+
     static int getCaravanValue(int cardID) 
     {
         if (cardID < 36)

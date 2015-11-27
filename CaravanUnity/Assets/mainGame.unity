@@ -97,7 +97,7 @@ Transform:
   m_PrefabInternal: {fileID: 1029511497}
   m_GameObject: {fileID: 309344829}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -2}
+  m_LocalPosition: {x: 0, y: 0, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852568869}
@@ -255,7 +255,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 684358306}
   m_Layer: 0
-  m_Name: Caravan2
+  m_Name: Caravan4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -272,7 +272,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852568869}
-  m_RootOrder: 1
+  m_RootOrder: 3
 --- !u!1 &706987160
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,7 +295,7 @@ Transform:
   m_PrefabInternal: {fileID: 1029511497}
   m_GameObject: {fileID: 706987160}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2}
+  m_LocalPosition: {x: 0, y: 0, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852568869}
@@ -350,10 +350,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 466918219}
-  - {fileID: 684358306}
   - {fileID: 1823130945}
-  - {fileID: 1781744851}
   - {fileID: 1297179592}
+  - {fileID: 684358306}
+  - {fileID: 1781744851}
   - {fileID: 1813820984}
   - {fileID: 706987161}
   - {fileID: 309344830}
@@ -398,7 +398,47 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 459446, guid: b168e13dd34166040ab243a1f630c084, type: 2}
       propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 175072, guid: b168e13dd34166040ab243a1f630c084, type: 2}
+      propertyPath: m_Name
+      value: Caravan4
+      objectReference: {fileID: 0}
+    - target: {fileID: 175070, guid: b168e13dd34166040ab243a1f630c084, type: 2}
+      propertyPath: m_Name
+      value: Caravan5
+      objectReference: {fileID: 0}
+    - target: {fileID: 175074, guid: b168e13dd34166040ab243a1f630c084, type: 2}
+      propertyPath: m_Name
+      value: Caravan3
+      objectReference: {fileID: 0}
+    - target: {fileID: 175076, guid: b168e13dd34166040ab243a1f630c084, type: 2}
+      propertyPath: m_Name
+      value: Caravan2
+      objectReference: {fileID: 0}
+    - target: {fileID: 475072, guid: b168e13dd34166040ab243a1f630c084, type: 2}
+      propertyPath: m_RootOrder
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 475076, guid: b168e13dd34166040ab243a1f630c084, type: 2}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 475074, guid: b168e13dd34166040ab243a1f630c084, type: 2}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 475070, guid: b168e13dd34166040ab243a1f630c084, type: 2}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 475080, guid: b168e13dd34166040ab243a1f630c084, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 475082, guid: b168e13dd34166040ab243a1f630c084, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b168e13dd34166040ab243a1f630c084, type: 2}
@@ -484,8 +524,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1251973340}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -1.67276273e-08, y: .923879564, z: -.382683486, w: -4.03840588e-08}
+  m_LocalPosition: {x: -0, y: 8.02999973, z: 4.6500001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -510,7 +550,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1297179592}
   m_Layer: 0
-  m_Name: Caravan5
+  m_Name: Caravan3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -527,7 +567,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852568869}
-  m_RootOrder: 4
+  m_RootOrder: 2
 --- !u!1 &1525554735
 GameObject:
   m_ObjectHideFlags: 0
@@ -576,7 +616,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1781744851}
   m_Layer: 0
-  m_Name: Caravan4
+  m_Name: Caravan5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -593,7 +633,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852568869}
-  m_RootOrder: 3
+  m_RootOrder: 4
 --- !u!1 &1813820983
 GameObject:
   m_ObjectHideFlags: 0
@@ -630,7 +670,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1823130945}
   m_Layer: 0
-  m_Name: Caravan3
+  m_Name: Caravan2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -647,4 +687,4 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852568869}
-  m_RootOrder: 2
+  m_RootOrder: 1
