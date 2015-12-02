@@ -84,8 +84,14 @@ public class CaravanBoard : MonoBehaviour
 
         Card cardToMove = source[srcPos];
         source.RemoveAt(srcPos);
-        dest.Add(cardToMove);
-        //TODO: add to dest at DestPos
+        if (destPos == -1)
+        {
+            dest.Add(cardToMove);
+        }
+        else
+        {
+            dest.Insert(destPos, cardToMove);
+        }
         dirty = true;
     }
 
@@ -93,6 +99,7 @@ public class CaravanBoard : MonoBehaviour
     {
         Destroy(getStackById(stack)[idx]);
         getStackById(stack).RemoveAt(idx);
+        dirty = true;
     }
 
     public void disband(int stack)
@@ -102,16 +109,7 @@ public class CaravanBoard : MonoBehaviour
             Destroy(child);
         }
         getStackById(stack).Clear();
-    }
-
-    public int caravanValue(int stack)
-    {
-        int result = 0;
-        foreach (Card c in getStackById(stack))
-        {
-            result += c.caravanValue();
-        }
-        return result;
+        dirty = true;
     }
 
     void Start()
@@ -126,12 +124,26 @@ public class CaravanBoard : MonoBehaviour
         {
             decks[i] = getDeck();
             hands[i] = new List<Card>();
+            for (int j = 0; j != 5; j++)
+            {
+                int srcPos = decks[i].Count - 1;
+                Card cardToMove = decks[i][srcPos];
+                decks[i].RemoveAt(srcPos);
+                hands[i].Add(cardToMove);
+            }
         }
-    }
 
+        ai_instance = new CaravanAI(this);
+    }
+    CaravanAI ai_instance = null;
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetButtonDown("Fire1"))
+        {
+            ai_instance.greedyStep();
+        }
+
         if (dirty)
         {
             positionCards();
