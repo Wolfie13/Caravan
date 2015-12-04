@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static CaravanUtil;
 // _____ _   _  _____  ______ _       _____   _____________   _   _   ___   _____   _____ _   _  _____   _     _____  _    _   _   _ _   ____  _________ ___________ ___________   _____   ___  ______  ___  _   _  ___   _   _  _____ 
 //|_   _| | | ||  ___| | ___ \ |     / _ \ \ / /  ___| ___ \ | | | | / _ \ /  ___| |_   _| | | ||  ___| | |   |  _  || |  | | | \ | | | | |  \/  || ___ \  ___| ___ \  ___|  _  \ /  __ \ / _ \ | ___ \/ _ \| | | |/ _ \ | \ | |/  ___|
 //  | | | |_| || |__   | |_/ / |    / /_\ \ V /| |__ | |_/ / | |_| |/ /_\ \\ `--.    | | | |_| || |__   | |   | | | || |  | | |  \| | | | | .  . || |_/ / |__ | |_/ / |__ | | | | | /  \// /_\ \| |_/ / /_\ \ | | / /_\ \|  \| |\ `--. 
@@ -44,160 +45,56 @@ class CaravanAI
         turnNumber++;
     }
 
-    private Dictionary<int, List<int>> copyState(Dictionary<int, List<int>> input)
-    {
-        Dictionary<int, List<int>> result = new Dictionary<int, List<int>>();
-        foreach (int key in input.Keys)
-        {
-            List<int> copyEntry = new List<int>();
-            foreach (int entry in input[key])
-            {
-                copyEntry.Add(entry);
-            }
-            result[key] = copyEntry;
-        }
-        return result;
-    }
-
-    private float heuristicForState(Dictionary<int, List<int>> state, bool isPlayer)
-    {
-        int myDeck = isPlayer ? 8 : 9;
-        int myHand = isPlayer ? 6 : 7;
-        int[] myCaravans = isPlayer ? new int[] { 0, 1, 2 } : new int[] { 3, 4, 5 };
-        int[] theirCaravans = !isPlayer ? new int[] { 0, 1, 2 } : new int[] { 3, 4, 5 };
-
-        float accumHeuristic = 0f;
-
-        bool myCaravansWinning = true;
-        bool theirCaravansWinning = true;
-        for (int i = 0; i != myCaravans.Length; i++)
-        {
-            accumHeuristic += heuristicForStack(state[myCaravans[i]], state[theirCaravans[i]]);
-            myCaravansWinning = myCaravansWinning && winningCaravan(state[myCaravans[i]]);
-            theirCaravansWinning = theirCaravansWinning && winningCaravan(state[theirCaravans[i]]);
-        }
-
-        if (!theirCaravansWinning && myCaravansWinning)
-        {
-            accumHeuristic += 9000;
-        }
-
-        accumHeuristic += state[myHand].Count * 3;
-        accumHeuristic += state[myDeck].Count * 1;
-
-        return accumHeuristic;
-    }
-
-    private bool winningCaravan(List<int> stack)
-    {
-        int val = caravanValue(stack);
-        return val > 20 && val < 27;
-    }
-
-    private int cardValue(List<int> stack, int idx)
-    {
-        if (idx < 0)
-        {
-            return 0;
-        }
-        int val = Card.getCaravanValue(stack[idx]);
-        
-        if (val == Card.CV_KING)
-        {
-            return cardValue(stack, idx - 1);
-        }
-
-        if (val == Card.CV_QUEEN)
-        { 
-            return (int) UnityEngine.Mathf.Floor(cardValue(stack, idx - 1) / 2);
-        }
-
-        return val;
-    }
-
-    public int caravanValue(List<int> stack)
-    {
-        int result = 0;
-        for (int idx = 0; idx != stack.Count; idx++)
-        {
-            result += cardValue(stack, idx);
-        }
-        return result;
-    }
-
-    private float heuristicForStack(List<int> stack, List<int> opposingStack)
-    {
-      	int stack_value = caravanValue (stack);
-		int opposing_stack_value = caravanValue (stack);
-
-		//If stack is below 20, scale heuristic from 0 - 20
-		if (stack_value < 20) 
+	private List<CaravanMove> getAllMoves(bool isPlayer)
+	{
+		List<CaravanMove> result = new List<CaravanMove>();
+		Dictionary<int, List<int>> gameState = board.getGameState();
+		int myDeck = isPlayer ? 8 : 9;
+		int myHand = isPlayer ? 6 : 7;
+		int[] myCaravans = isPlayer ? new int[] {0, 1, 2} : new int[] {3, 4, 5};
+		int[] allCaravans = new int[] { 0, 1, 2, 3, 4, 5 };
+		
+		//Draw from deck
+		result.Add(new CaravanMove(CaravanMove.Type.Play, myDeck, 0, myHand, -1));
+		
+		//for each card in hand    
+		for (int i = 0; i != gameState[myHand].Count; i++)
 		{
-			return (float)stack_value/20 * 50.0f;
+			//play against each caravan on table
+			foreach (int caravanIdx in allCaravans)
+			{
+				//And each card in said caravan
+				for (int j = 0; j != gameState[caravanIdx].Count; j++)
+				{
+					result.Add(new CaravanMove(CaravanMove.Type.Play, myHand, i, caravanIdx, j));
+				}
+				//Play on an empty caravan
+				if (gameState[caravanIdx].Count == 0)
+				{
+					result.Add(new CaravanMove(CaravanMove.Type.Play, myHand, i, caravanIdx, 0));
+				}
+			}
 		}
-		//If stack is greater than 27 return small value for heuristic
-		if (stack_value > 27) 
+		
+		//for each card in hand
+		for (int i = 0; i != gameState[myHand].Count; i++)
 		{
-			return 1.0f;
+			//remove and draw new card from deck
+			result.Add(new CaravanMove(CaravanMove.Type.Discard, myHand, i, 0, 0));
 		}
-		//If stack is between 20 - 27 and bigger than the opposing stack rturn large value for heuristic
-		if(stack_value >= 20 && stack_value <= 27 && stack_value > opposing_stack_value )
+		
+		//for each owned caravan on board
+		foreach (int caravanIdx in myCaravans)
 		{
-			return 5000.0f;
+			//remove caravan
+			if (gameState[caravanIdx].Count > 0)
+			{
+				result.Add(new CaravanMove(CaravanMove.Type.Disband, caravanIdx, 0, 0, 0));
+			}
 		}
-        return 0;
-    }
-
-    private List<CaravanMove> getAllMoves(bool isPlayer)
-    {
-        List<CaravanMove> result = new List<CaravanMove>();
-        Dictionary<int, List<int>> gameState = board.getGameState();
-        int myDeck = isPlayer ? 8 : 9;
-        int myHand = isPlayer ? 6 : 7;
-        int[] myCaravans = isPlayer ? new int[] {0, 1, 2} : new int[] {3, 4, 5};
-        int[] allCaravans = new int[] { 0, 1, 2, 3, 4, 5 };
-
-        //Draw from deck
-        result.Add(new CaravanMove(CaravanMove.Type.Play, myDeck, 0, myHand, -1));
-
-        //for each card in hand    
-        for (int i = 0; i != gameState[myHand].Count; i++)
-        {
-            //play against each caravan on table
-            foreach (int caravanIdx in allCaravans)
-            {
-                //And each card in said caravan
-                for (int j = 0; j != gameState[caravanIdx].Count; j++)
-                {
-                    result.Add(new CaravanMove(CaravanMove.Type.Play, myHand, i, caravanIdx, j));
-                }
-                //Play on an empty caravan
-                if (gameState[caravanIdx].Count == 0)
-                {
-                    result.Add(new CaravanMove(CaravanMove.Type.Play, myHand, i, caravanIdx, 0));
-                }
-            }
-        }
-
-        //for each card in hand
-        for (int i = 0; i != gameState[myHand].Count; i++)
-        {
-            //remove and draw new card from deck
-            result.Add(new CaravanMove(CaravanMove.Type.Discard, myHand, i, 0, 0));
-        }
-
-        //for each owned caravan on board
-        foreach (int caravanIdx in myCaravans)
-        {
-            //remove caravan
-            if (gameState[caravanIdx].Count > 0)
-            {
-                result.Add(new CaravanMove(CaravanMove.Type.Disband, caravanIdx, 0, 0, 0));
-            }
-        }
-
-        return result;
-    }
+		
+		return result;
+	}
 
 
     private class CaravanMove
