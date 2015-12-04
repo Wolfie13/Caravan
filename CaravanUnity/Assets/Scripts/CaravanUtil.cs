@@ -111,9 +111,9 @@ public static class CaravanUtil
 			accumHeuristic += 9000;
 		}
 		
-		accumHeuristic += state[myHand].Count * 3;
-		accumHeuristic += state[myDeck].Count * 1;
-		
+		accumHeuristic += state[myHand].Count * 2;
+		accumHeuristic += state[myDeck].Count * 4;
+
 		return accumHeuristic;
 	}
 }

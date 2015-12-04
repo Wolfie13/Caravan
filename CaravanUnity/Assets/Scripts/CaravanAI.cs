@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static CaravanUtil;
 // _____ _   _  _____  ______ _       _____   _____________   _   _   ___   _____   _____ _   _  _____   _     _____  _    _   _   _ _   ____  _________ ___________ ___________   _____   ___  ______  ___  _   _  ___   _   _  _____ 
 //|_   _| | | ||  ___| | ___ \ |     / _ \ \ / /  ___| ___ \ | | | | / _ \ /  ___| |_   _| | | ||  ___| | |   |  _  || |  | | | \ | | | | |  \/  || ___ \  ___| ___ \  ___|  _  \ /  __ \ / _ \ | ___ \/ _ \| | | |/ _ \ | \ | |/  ___|
 //  | | | |_| || |__   | |_/ / |    / /_\ \ V /| |__ | |_/ / | |_| |/ /_\ \\ `--.    | | | |_| || |__   | |   | | | || |  | | |  \| | | | | .  . || |_/ / |__ | |_/ / |__ | | | | | /  \// /_\ \| |_/ / /_\ \ | | / /_\ \|  \| |\ `--. 
@@ -32,15 +31,15 @@ class CaravanAI
         CaravanMove bestMove = null;
         foreach (CaravanMove move in possibleMoves)
         {
-            Dictionary<int, List<int>> resultantState = copyState(startingState);
+			Dictionary<int, List<int>> resultantState = CaravanUtil.copyState(startingState);
             move.test(resultantState); //Modifies resultantstate with move
-            float heuristicResult = heuristicForState(resultantState, false);
+			float heuristicResult = CaravanUtil.heuristicForState(resultantState, false);
             if (heuristicResult > bestStateValue)
             {
+                bestStateValue = heuristicResult;
                 bestMove = move;
             }
         }
-
         bestMove.execute(board);
         turnNumber++;
     }
@@ -80,7 +79,7 @@ class CaravanAI
 		for (int i = 0; i != gameState[myHand].Count; i++)
 		{
 			//remove and draw new card from deck
-			result.Add(new CaravanMove(CaravanMove.Type.Discard, myHand, i, 0, 0));
+			result.Add(new CaravanMove(CaravanMove.Type.Discard, myHand, i, myDeck, 0));
 		}
 		
 		//for each owned caravan on board
@@ -109,11 +108,11 @@ class CaravanAI
         }
 
         public enum Type { Discard, Play, Disband };
-        private Type type;
-        int sourceStack;
-        int sourceIdx;
-        int destStack;
-        int destIdx;
+        public Type type;
+        public int sourceStack;
+        public int sourceIdx;
+        public int destStack;
+        public int destIdx;
 
         public void execute(CaravanBoard board)
         {
@@ -137,6 +136,8 @@ class CaravanAI
 
         internal void test(Dictionary<int, List<int>> testState)
         {
+			List<int> source = testState[sourceStack];
+			List<int> dest = testState[destStack];
             switch (type)
             {
                 case Type.Disband:
@@ -144,8 +145,6 @@ class CaravanAI
                     break;
 
                 case Type.Play:
-                    List<int> source = testState[sourceStack];
-                    List<int> dest = testState[destStack];
 
                     int cardToMove = source[sourceIdx];
                     source.RemoveAt(sourceIdx);
@@ -160,7 +159,13 @@ class CaravanAI
                     break;
 
                 case Type.Discard:
-                    testState[sourceStack].RemoveAt(sourceIdx);
+					//Source should be the player's hand
+					//dest should be the player's deck
+					//but discarded card is not returned to deck
+                    source.RemoveAt(sourceIdx);
+					int drawnCard = dest[destIdx];
+					dest.RemoveAt(destIdx);
+					source.Insert(0, drawnCard);
                     break;
 
             }
