@@ -66,24 +66,27 @@ class CaravanAI
         int[] myCaravans = isPlayer ? new int[] { 0, 1, 2 } : new int[] { 3, 4, 5 };
         int[] theirCaravans = !isPlayer ? new int[] { 0, 1, 2 } : new int[] { 3, 4, 5 };
 
-        bool myCaravansWinning = true;
-        foreach (int caravanIdx in myCaravans)
-        {
-            myCaravansWinning = myCaravansWinning && winningCaravan(state[caravanIdx]);
-        }
+        float accumHeuristic = 0f;
 
+        bool myCaravansWinning = true;
         bool theirCaravansWinning = true;
-        foreach (int caravanIdx in theirCaravans)
+        for (int i = 0; i != myCaravans.Length; i++)
         {
-            theirCaravansWinning = theirCaravansWinning && winningCaravan(state[caravanIdx]);
+            accumHeuristic += heuristicForStack(state[myCaravans[i]], state[theirCaravans[i]]);
+
+            myCaravansWinning = myCaravansWinning && winningCaravan(state[myCaravans[i]]);
+            theirCaravansWinning = theirCaravansWinning && winningCaravan(state[theirCaravans[i]]);
         }
 
         if (!theirCaravansWinning && myCaravansWinning)
         {
-            return 1;
+            accumHeuristic += 9000;
         }
 
-        return 0f;
+        accumHeuristic += state[myHand].Count * 3;
+        accumHeuristic += state[myDeck].Count * 1;
+
+        return accumHeuristic;
     }
 
     private bool winningCaravan(List<int> stack)
@@ -123,22 +126,12 @@ class CaravanAI
         return result;
     }
 
-    private float heuristicForStack(int stack, bool isPlayer)
+    private float heuristicForStack(List<int> stack, List<int> opposingStack)
     {
         //if stack is below 20, scaling linearly from 0-20.
         //if more than 27 -1
         //if between 20-27, and bigger than opposition, +1
-        int opposingStack = stack + (isPlayer ? -3 : 3);
         //that comes later!!!
-        return 0;
-    }
-
-    private float evaluateHeuristic(bool isPlayer)
-    {
-        if (isPlayer)
-        {
-            //it would be extremely painful
-        }
         return 0;
     }
 
@@ -149,6 +142,7 @@ class CaravanAI
         int myDeck = isPlayer ? 8 : 9;
         int myHand = isPlayer ? 6 : 7;
         int[] myCaravans = isPlayer ? new int[] {0, 1, 2} : new int[] {3, 4, 5};
+        int[] allCaravans = new int[] { 0, 1, 2, 3, 4, 5 };
 
         //Draw from deck
         result.Add(new CaravanMove(CaravanMove.Type.Play, myDeck, 0, myHand, -1));
@@ -157,12 +151,17 @@ class CaravanAI
         for (int i = 0; i != gameState[myHand].Count; i++)
         {
             //play against each caravan on table
-            foreach (int caravanIdx in myCaravans)
+            foreach (int caravanIdx in allCaravans)
             {
                 //And each card in said caravan
                 for (int j = 0; j != gameState[caravanIdx].Count; j++)
                 {
                     result.Add(new CaravanMove(CaravanMove.Type.Play, myHand, i, caravanIdx, j));
+                }
+                //Play on an empty caravan
+                if (gameState[caravanIdx].Count == 0)
+                {
+                    result.Add(new CaravanMove(CaravanMove.Type.Play, myHand, i, caravanIdx, 0));
                 }
             }
         }
