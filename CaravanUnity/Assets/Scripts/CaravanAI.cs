@@ -73,7 +73,6 @@ class CaravanAI
         for (int i = 0; i != myCaravans.Length; i++)
         {
             accumHeuristic += heuristicForStack(state[myCaravans[i]], state[theirCaravans[i]]);
-
             myCaravansWinning = myCaravansWinning && winningCaravan(state[myCaravans[i]]);
             theirCaravansWinning = theirCaravansWinning && winningCaravan(state[theirCaravans[i]]);
         }
@@ -128,10 +127,24 @@ class CaravanAI
 
     private float heuristicForStack(List<int> stack, List<int> opposingStack)
     {
-        //if stack is below 20, scaling linearly from 0-20.
-        //if more than 27 -1
-        //if between 20-27, and bigger than opposition, +1
-        //that comes later!!!
+      	int stack_value = caravanValue (stack);
+		int opposing_stack_value = caravanValue (stack);
+
+		//If stack is below 20, scale heuristic from 0 - 20
+		if (stack_value < 20) 
+		{
+			return (float)stack_value/20 * 50.0f;
+		}
+		//If stack is greater than 27 return small value for heuristic
+		if (stack_value > 27) 
+		{
+			return 1.0f;
+		}
+		//If stack is between 20 - 27 and bigger than the opposing stack rturn large value for heuristic
+		if(stack_value >= 20 && stack_value <= 27 && stack_value > opposing_stack_value )
+		{
+			return 5000.0f;
+		}
         return 0;
     }
 
