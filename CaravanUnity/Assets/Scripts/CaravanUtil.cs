@@ -69,21 +69,21 @@ public static class CaravanUtil
 	{
 		int stack_value = caravanValue (stack);
 		int opposing_stack_value = caravanValue (stack);
-		
+
+        //If stack is between 20 - 27 and bigger than the opposing stack rturn large value for heuristic
+        if (stack_value >= 20 && stack_value <= 27 && stack_value > opposing_stack_value)
+        {
+            return 5000.0f;
+        }
 		//If stack is below 20, scale heuristic from 0 - 20
-		if (stack_value < 20) 
+		if (stack_value <= 20) 
 		{
-			return (float)stack_value/20 * 50.0f;
+			return (float)stack_value/20 * 10.0f;
 		}
 		//If stack is greater than 27 return small value for heuristic
 		if (stack_value > 27) 
 		{
 			return -20f;
-		}
-		//If stack is between 20 - 27 and bigger than the opposing stack rturn large value for heuristic
-		if(stack_value >= 20 && stack_value <= 27 && stack_value > opposing_stack_value )
-		{
-			return 5000.0f;
 		}
 		return 0;
 	}

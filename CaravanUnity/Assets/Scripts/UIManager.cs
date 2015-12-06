@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
     {
+        GameState = this.GetComponent<CaravanBoard>().getGameState();	
         UpdateCaravanTexts(GameState);	
 	}
 
@@ -27,7 +28,8 @@ public class UIManager : MonoBehaviour {
         {
            if(stack.Key < 6)
            {
-               int caravan_value = CaravanUtil.caravanValue(stack.Value);               
+               int caravan_value = CaravanUtil.caravanValue(stack.Value);
+               CaravanTexts[stack.Key].GetComponent<TextMesh>().text = caravan_value.ToString();
            }
         
         }
