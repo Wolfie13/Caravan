@@ -151,12 +151,20 @@ public class CaravanBoard : MonoBehaviour
         }
     }
 
-    void organizeStack(List<Card> stack, int num)
+    void organizeStack(List<Card> stack, int num, bool hidden, bool deck = false)
     {
+        if (hidden)
+        {
+            boardPositions[num].transform.rotation = Quaternion.AngleAxis(180, Vector3.forward);
+        }
+
         for (int i = 0; i != stack.Count; i++)
         {
             stack[i].transform.parent = boardPositions[num].transform;
-            stack[i].transform.localPosition = new Vector3(0, i * 0.02f, 0);
+            stack[i].transform.localRotation = Quaternion.identity;
+            bool topCaravan = num / 6 > 0.5f;
+            topCaravan &= num < 6;
+            stack[i].transform.localPosition = new Vector3(0, i * 0.02f, (topCaravan ? -0.5f : 0.5f) * (deck ? 0 : i));   
         }
     }
 
@@ -165,12 +173,12 @@ public class CaravanBoard : MonoBehaviour
     {
         foreach (int stackNum in caravans.Keys)
         {
-            organizeStack(caravans[stackNum], stackNum);
+            organizeStack(caravans[stackNum], stackNum, false);
         }
-        organizeStack(hands[0], 6);
-        organizeStack(hands[1], 7);
-        organizeStack(decks[0], 8);
-        organizeStack(decks[1], 9);
+        organizeStack(hands[0], 6, false);
+        organizeStack(hands[1], 7, true);
+        organizeStack(decks[0], 8, true, true);
+        organizeStack(decks[1], 9, true, true);
     }
 
     private static Transform getCard(int idx)
