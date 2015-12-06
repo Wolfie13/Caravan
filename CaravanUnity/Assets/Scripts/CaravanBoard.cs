@@ -138,8 +138,7 @@ public class CaravanBoard : MonoBehaviour
     CaravanAI ai_instance = null;
     // Update is called once per frame
     void Update()
-    {
-
+    {        
         if (Input.GetButtonDown("Fire1"))
         {
             ai_instance.greedyStep();

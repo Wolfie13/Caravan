@@ -15,6 +15,10 @@ public class Card : MonoBehaviour
     public const int CV_JOKER = -3;
     public const int CV_KING = -4;
     public const int CV_QUEEN = -5;
+
+    private Color start_colour;
+    private Color selected_colour;
+    private MeshRenderer mr;
     
     private static int DONTASK(int i)
     {
@@ -54,7 +58,28 @@ public class Card : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-        MeshRenderer mr = this.gameObject.GetComponent<MeshRenderer>();
+        mr = this.gameObject.GetComponent<MeshRenderer>();
         mr.material.mainTexture = CardManager.getCardTexture(cardID);
+
+        selected_colour = new Color(0.0f, 0.0f, 50.0f);
 	}
+
+    void OnMouseEnter()
+    {        
+        start_colour = mr.material.color;
+        mr.material.color = new Color(0.0f, 153.0f, 0.0f);
+    }
+
+    void OnMouseExit()
+    {
+        if (mr.material.color != selected_colour)
+        {
+            mr.material.color = start_colour;
+        }
+    }
+
+    void OnMouseDown()
+    {
+        mr.material.color = selected_colour;
+    }
 }
