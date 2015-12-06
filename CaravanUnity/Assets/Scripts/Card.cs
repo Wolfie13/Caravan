@@ -19,18 +19,12 @@ public class Card : MonoBehaviour
     private Color start_colour;
     private Color selected_colour;
     private MeshRenderer mr;
-    
-    private static int DONTASK(int i)
-    {
-        //No really, don't ask ~ Will
-        return (int) "\x02\x02\x02\x02\x03\x03\x03\x03\x04\x04\x04\x04\x05\x05\x05\x05\x06\x06\x06\x06\x07\x07\x07\x07\x08\x08\x08\x08\x09\x09\x09\x09\x0A\x0A\x0A\x0A"[i];
-    }
 
     public static int getCaravanValue(int cardID) 
     {
         if (cardID < 36)
         {
-            return DONTASK(cardID);
+            return i / 4 + 2;
         }
         if (cardID > 35 && cardID < 40)
         {
