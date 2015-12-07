@@ -66,6 +66,7 @@ public class CaravanBoard : MonoBehaviour
         if (stackID < 6)
         {
             stack = caravans[stackID];
+            // Possible check for null.
         }
 
         if (stack == null)
@@ -138,7 +139,9 @@ public class CaravanBoard : MonoBehaviour
     CaravanAI ai_instance = null;
     // Update is called once per frame
     void Update()
-    {        
+    {   
+             
+
         if (Input.GetButtonDown("Fire1"))
         {
             ai_instance.greedyStep();
@@ -233,4 +236,6 @@ public class CaravanBoard : MonoBehaviour
         }
         return result;
     }
+
+
 }
