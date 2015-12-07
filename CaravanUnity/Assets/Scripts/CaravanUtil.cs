@@ -76,7 +76,7 @@ public static class CaravanUtil
             return 5000.0f;
         }
 		//If stack is below 20, scale heuristic from 0 - 20
-		if (stack_value <= 20) 
+		if (stack_value <= 21) 
 		{
 			return (float)stack_value/20 * 10.0f;
 		}

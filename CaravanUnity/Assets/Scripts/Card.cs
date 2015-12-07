@@ -24,7 +24,7 @@ public class Card : MonoBehaviour
     {
         if (cardID < 36)
         {
-            return i / 4 + 2;
+            return cardID / 4 + 2;
         }
         if (cardID > 35 && cardID < 40)
         {
