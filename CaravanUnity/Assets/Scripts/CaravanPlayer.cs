@@ -66,6 +66,7 @@ public class CaravanPlayer : MonoBehaviour
                     {
                         board.makeMove(source.stack, source.pos, destination.stack, destination.pos + 1, false);
                         board.makeMove(8, 0, 6, 0);
+                        board.makeMove(9, 0, 7, 0, false);
 
                         selectedCard = null;
                         return;
@@ -85,6 +86,7 @@ public class CaravanPlayer : MonoBehaviour
                             {
                                 board.makeMove(source.stack, source.pos, i, -1, false);
                                 board.makeMove(8, 0, 6, -1);
+                                board.makeMove(9, 0, 7, 0, false);
 
                                 selectedCard = null;
                                 return;

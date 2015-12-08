@@ -45,7 +45,7 @@ public static class CaravanUtil
 		
 		if (val == Card.CV_QUEEN)
 		{ 
-			return (int) UnityEngine.Mathf.Floor(cardValue(stack, idx - 1) / 2);
+			return -(int) UnityEngine.Mathf.Floor(cardValue(stack, idx - 1) / 2);
 		}
 		
 		return val;
@@ -65,7 +65,7 @@ public static class CaravanUtil
 	private static float heuristicForStack(List<int> stack, List<int> opposingStack)
 	{
 		int stack_value = caravanValue (stack);
-		int opposing_stack_value = caravanValue (stack);
+		int opposing_stack_value = caravanValue (opposingStack);
 
 		//If stack is between 20 - 27 and bigger than the opposing stack rturn large value for heuristic
         if (stack_value >= 20 && stack_value <= 27 && stack_value > opposing_stack_value)
@@ -83,9 +83,10 @@ public static class CaravanUtil
 			return -20f;
 		}
 
-        if(opposing_stack_value < 20 && opposing_stack_value > 27)
+        //If opposing stack is greater than 27 return large value for heuristic
+        if(opposing_stack_value > 27)
         {
-            return 30.0f;
+            return 3000.0f;
         }
 
 		return 0;

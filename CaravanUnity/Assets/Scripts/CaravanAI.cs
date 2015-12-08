@@ -35,7 +35,7 @@ class CaravanAI
 		if (bestMove != null)
 		{
 			bestMove.execute(board);
-		}
+        }
 
 	    turnNumber++;
     }
@@ -113,7 +113,7 @@ class CaravanAI
                     break;
 
                 case Type.Play:
-                    board.makeMove(sourceStack, sourceIdx, destStack, destIdx);
+                    board.makeMove(sourceStack, sourceIdx, destStack, destIdx);                    
                     break;
 
                 case Type.Discard:

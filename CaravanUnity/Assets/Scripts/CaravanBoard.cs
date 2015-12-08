@@ -67,7 +67,7 @@ public class CaravanBoard : MonoBehaviour
         {
             if (AI_turn)
             {
-                ai_instance.greedyStep();
+                ai_instance.greedyStep();                
             }
 
             if (dirty)
