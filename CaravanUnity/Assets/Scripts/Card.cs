@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class Card : MonoBehaviour
 {
@@ -16,6 +17,10 @@ public class Card : MonoBehaviour
 
     private Color start_colour;
     private MeshRenderer mr;
+	private bool is_selected;
+
+	private readonly Color ActiveCard = new Color(0.0f, (153.0f / 255), 0.0f);
+	private readonly Color InvalidMove = new Color((153.0f / 255), 0.0f, 0.0f);
 
     public static int getCaravanValue(int cardID) 
     {
@@ -56,11 +61,43 @@ public class Card : MonoBehaviour
 
     void OnMouseEnter()
     {
-		mr.material.SetColor("_Color", new Color(0.0f, (153.0f / 255), 0.0f));
+		if (!is_selected)
+		{
+			mr.material.SetColor("_Color", ActiveCard);
+		}
     }
 
     void OnMouseExit()
     {
-		mr.material.SetColor("_Color", start_colour);
+		if (!is_selected)
+		{
+			mr.material.SetColor("_Color", start_colour);
+		}
     }
+
+	public void StateChange(bool badMove = false)
+	{
+		if (badMove)
+		{
+			StartCoroutine(InvalidMoveChange());
+			return;
+		}
+
+		is_selected = !is_selected;
+
+		if (is_selected)
+		{
+			mr.material.SetColor("_Color", ActiveCard);
+			return;
+		}
+
+		mr.material.SetColor("_Color", start_colour);
+	}
+
+	IEnumerator InvalidMoveChange ()
+	{
+		mr.material.SetColor("_Color", InvalidMove);
+		yield return new WaitForSeconds(0.5f);
+		mr.material.SetColor("_Color", ActiveCard);
+	}
 }

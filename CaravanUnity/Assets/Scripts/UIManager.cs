@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 
-public class UIManager : MonoBehaviour {
-
+public class UIManager : MonoBehaviour
+{
     public GameObject[] CaravanTexts;
+	public GameObject WinnerText;
     
     private Dictionary<int, List<int>> GameState;
 
@@ -34,4 +33,9 @@ public class UIManager : MonoBehaviour {
         
         }
     }
+
+	public void UpdateWinnerText (bool isPlayer)
+	{ 
+		WinnerText.GetComponent<TextMesh>().text = (isPlayer) ? "You won!" : "You Lost... Maybe Next Time.";
+	}
 }

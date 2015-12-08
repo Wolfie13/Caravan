@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class CaravanBoard : MonoBehaviour
 
     private bool dirty = true;
     private bool AI_turn = false;
-    private bool game_over = false;
+	private bool game_over = false;
 
     public const int PLAYER_HAND = 6;
     public const int AI_HAND = 7;
@@ -58,32 +59,34 @@ public class CaravanBoard : MonoBehaviour
     //Game Loop
     void Update()
     {
-        if(game_over)
-        {
-            Application.LoadLevel(Application.loadedLevel);
-        }
+		if (game_over) return;
 
-        if (!game_over)
-        {
-            if (AI_turn)
-            {
-                ai_instance.greedyStep();                
-            }
+	    if (AI_turn)
+	    {
+		    ai_instance.greedyStep();
+	    }
 
-            if (dirty)
-            {
-                positionCards();
-                dirty = false;
-            }
+	    if (dirty)
+	    {
+		    positionCards();
+		    dirty = false;
+	    }
 
-            int winnar = CheckWin();
-            if (winnar != 0)
-            {
-                Debug.Log("Game Over: " + winnar);
-                game_over = true;
-            }
-        }
+	    int winnar = CheckWin();
+	    if (winnar == 0) return;
+
+		game_over = true;
+	    //Debug.Log("Game Over: " + winnar);
+		gameObject.GetComponent<UIManager>().UpdateWinnerText(winnar == 1);
+		Destroy(gameObject.GetComponent<CaravanPlayer>()); // Stops the player... playing?
+	    StartCoroutine(ReloadLevel(3.5f));
     }
+
+	IEnumerator ReloadLevel (float timeDelay)
+	{
+		yield return new WaitForSeconds(timeDelay);
+		Application.LoadLevel(Application.loadedLevel);
+	}
 
     private static List<int> cardStack(List<Card> cardObjects)
     {
