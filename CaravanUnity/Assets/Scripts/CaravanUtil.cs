@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 
 public static class CaravanUtil
@@ -7,15 +7,13 @@ public static class CaravanUtil
 	public static Dictionary<int, List<int>> copyState(Dictionary<int, List<int>> input)
 	{
 		Dictionary<int, List<int>> result = new Dictionary<int, List<int>>();
+		
 		foreach (int key in input.Keys)
 		{
-			List<int> copyEntry = new List<int>();
-			foreach (int entry in input[key])
-			{
-				copyEntry.Add(entry);
-			}
+			List<int> copyEntry = input[key].ToList();
 			result[key] = copyEntry;
 		}
+
 		return result;
 	}
 
@@ -69,7 +67,7 @@ public static class CaravanUtil
 		int stack_value = caravanValue (stack);
 		int opposing_stack_value = caravanValue (stack);
 
-        //If stack is between 20 - 27 and bigger than the opposing stack rturn large value for heuristic
+		//If stack is between 20 - 27 and bigger than the opposing stack rturn large value for heuristic
         if (stack_value >= 20 && stack_value <= 27 && stack_value > opposing_stack_value)
         {
             return 500.0f;

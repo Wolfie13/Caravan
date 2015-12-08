@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CaravanBoard : MonoBehaviour
@@ -78,7 +79,7 @@ public class CaravanBoard : MonoBehaviour
             int winnar = CheckWin();
             if (winnar != 0)
             {
-                UnityEngine.Debug.Log("Game Over: " + winnar);
+                Debug.Log("Game Over: " + winnar);
                 game_over = true;
             }
         }
@@ -87,11 +88,10 @@ public class CaravanBoard : MonoBehaviour
     private static List<int> cardStack(List<Card> cardObjects)
     {
         List<int> result = new List<int>(cardObjects.Count);
-        foreach (Card cardObject in cardObjects)
-        {
-            result.Add(cardObject.cardID);
-        }
-        return result;
+
+	    result.AddRange(cardObjects.Select(cardObject => cardObject.cardID));
+
+	    return result;
     }
 
     public Dictionary<int, List<int>> getGameState()
@@ -104,7 +104,7 @@ public class CaravanBoard : MonoBehaviour
         return result;
     }
 
-    private List<Card> getStackById(int stackID)
+    public List<Card> getStackById(int stackID)
     {
         List<Card> stack = null;
         switch (stackID)
@@ -128,13 +128,10 @@ public class CaravanBoard : MonoBehaviour
             // Possible check for null.
         }
 
-        if (stack == null)
-        {
-            Debug.LogError("Terrible Move, Delete Yourself Today!!! " + stackID);
-            return null;
-        }
+	    if (stack != null) return stack;
 
-        return stack;
+	    Debug.LogError("Terrible Move, Delete Yourself Today!!! " + stackID);
+	    return null;
     }
 
     public void makeMove(int stack, int srcPos, int destination, int destPos, bool finishTurn = true)
@@ -161,7 +158,7 @@ public class CaravanBoard : MonoBehaviour
 
     public void discard(int stack, int idx)
     {
-        Destroy(getStackById(stack)[idx]);
+        Destroy(getStackById(stack)[idx].gameObject);
         getStackById(stack).RemoveAt(idx);
         dirty = true;
         AI_turn = !AI_turn;
@@ -169,13 +166,11 @@ public class CaravanBoard : MonoBehaviour
 
     public void disband(int stack)
     {
-        foreach (Transform child in boardPositions[stack].transform)
+        foreach (Transform child in boardPositions[stack].transform.Cast<Transform>().Where(child => child.gameObject.GetComponent<Card>() != null))
         {
-            if (child.gameObject.GetComponent<Card>() != null)
-            {
-                Destroy(child.gameObject);
-            }
+	        Destroy(child.gameObject);
         }
+
         getStackById(stack).Clear();
         dirty = true;
         AI_turn = !AI_turn;
@@ -183,9 +178,16 @@ public class CaravanBoard : MonoBehaviour
 
     void organizeStack(List<Card> stack, int num, bool hidden, bool dontSpread = false)
     {
+		Transform cardParentObject = boardPositions[num].transform;
+
         if (hidden)
         {
-            boardPositions[num].transform.rotation = Quaternion.AngleAxis(180, Vector3.forward);
+			// This fixes parenting issues resulting in odd visuals and stops the player doing bad stuff.
+			GameObject visualFix = new GameObject("Hidden Cards", typeof(BoxCollider));
+
+			visualFix.transform.parent = cardParentObject;
+			visualFix.transform.localPosition = Vector3.zero;
+			cardParentObject = visualFix.transform;
         }
 
         bool topCaravan = num / 6.0f >= 0.5f;
@@ -193,10 +195,22 @@ public class CaravanBoard : MonoBehaviour
 
         for (int i = 0; i != stack.Count; i++)
         {
-            stack[i].transform.parent = boardPositions[num].transform;
+			stack[i].transform.parent = cardParentObject;
             stack[i].transform.localRotation = Quaternion.identity;
-            stack[i].transform.localPosition = new Vector3(0, (i * 0.02f) + 0.2f, (topCaravan ? 0.5f : -0.5f) * (dontSpread ? 0 : i));
+            stack[i].transform.localPosition = new Vector3(0, (i * 0.02f) + (-0.17f), (topCaravan ? 0.5f : -0.5f) * (dontSpread ? 0 : i));
         }
+
+		if (!hidden) return;
+
+	    Transform[] allChildren = cardParentObject.gameObject.GetComponentsInChildren<Transform>();
+	    // Basically add all the positions together and divide by the child count to get the true center.
+	    Vector3 childCenter = allChildren.Aggregate(Vector3.zero, (current, child) => current + child.transform.position) / allChildren.Length;
+
+		cardParentObject.RotateAround(cardParentObject.localPosition + childCenter, Vector3.forward, 180f);
+		// Resize the box collider to accommodate the cards.
+		BoxCollider interactionFix = cardParentObject.GetComponent<BoxCollider>();
+		interactionFix.center = new Vector3(0f, cardParentObject.localPosition.y / 2f, 0f);
+		interactionFix.size = new Vector3(1.2f, 1, 2.2f);
     }
 
     //Moves card objects into their proper positions.

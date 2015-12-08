@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 
 public class Card : MonoBehaviour
 {
@@ -53,16 +51,16 @@ public class Card : MonoBehaviour
 	{
         mr = this.gameObject.GetComponent<MeshRenderer>();
         mr.material.mainTexture = CardManager.getCardTexture(cardID);
+		start_colour = mr.material.color;
 	}
 
     void OnMouseEnter()
-    {        
-        start_colour = mr.material.color;
-        mr.material.color = new Color(0.0f, 153.0f, 0.0f);
+    {
+		mr.material.SetColor("_Color", new Color(0.0f, (153.0f / 255), 0.0f));
     }
 
     void OnMouseExit()
     {
-        mr.material.color = start_colour;
+		mr.material.SetColor("_Color", start_colour);
     }
 }

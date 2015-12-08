@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;                                                                                                                                                                                                                                
 
 class CaravanAI
 {
@@ -32,8 +31,13 @@ class CaravanAI
                 bestMove = move;
             }
         }
-        bestMove.execute(board);
-        turnNumber++;
+		
+		if (bestMove != null)
+		{
+			bestMove.execute(board);
+		}
+
+	    turnNumber++;
     }
 
 	private List<CaravanMove> getAllMoves(bool isPlayer)
@@ -75,15 +79,8 @@ class CaravanAI
 		}
 		
 		//for each owned caravan on board
-		foreach (int caravanIdx in myCaravans)
-		{
-			//remove caravan
-			if (gameState[caravanIdx].Count > 0)
-			{
-				result.Add(new CaravanMove(CaravanMove.Type.Disband, caravanIdx, 0, 0, 0));
-			}
-		}
-		
+		result.AddRange(from caravanIdx in myCaravans where gameState[caravanIdx].Count > 0 select new CaravanMove(CaravanMove.Type.Disband, caravanIdx, 0, 0, 0));
+
 		return result;
 	}
 
@@ -160,6 +157,8 @@ class CaravanAI
 					source.Insert(0, drawnCard);
                     break;
 
+	            default:
+		            throw new ArgumentOutOfRangeException();
             }
         }
     }

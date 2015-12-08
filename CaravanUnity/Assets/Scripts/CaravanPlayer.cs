@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class CaravanPlayer : MonoBehaviour
 {
@@ -45,12 +45,8 @@ public class CaravanPlayer : MonoBehaviour
         return result;
     }
 
-    Vector3 originalPos;
-
 	void Update ()
     {
-        //CardFollowCursor();
-
 		if (Input.GetMouseButtonDown (0))
 		{
 			RaycastHit hit;
@@ -58,23 +54,19 @@ public class CaravanPlayer : MonoBehaviour
 			
 			if (Physics.Raycast(ray, out hit, 100f))
 			{
-                Card foundCard = (Card)hit.collider.gameObject.GetComponent<Card>();
-BoardPos destination = getPositionForCard(foundCard);
+                Card foundCard = hit.collider.gameObject.GetComponent<Card>();
+				BoardPos destination = getPositionForCard(foundCard);
+
 				// Here we'll check if we have a card already.
 				// If we do have a card we'll check where we're putting it.
                 if (selectedCard != null)
                 {
-                    //selectedCard.transform.position = originalPos;
-
                     BoardPos source = getPositionForCard(selectedCard);
                     if (foundCard != null)
                     {
-                        // Check if the current card is a King, Queen.
-
-                        
                         board.makeMove(source.stack, source.pos, destination.stack, destination.pos + 1, false);
-                        board.makeMove(8, 0, 6, 0); // -1 put it at the bottom.
-                                                
+                        board.makeMove(8, 0, 6, 0);
+
                         selectedCard = null;
                         return;
                     }
@@ -103,13 +95,9 @@ BoardPos destination = getPositionForCard(foundCard);
 
                 if (foundCard != null && selectedCard == null)
                 {
-                    if(destination.stack < 6 || destination.stack == 7 || destination.stack == 9)
-                    {
-                        return;
-                    }
+                    if(destination.stack < 6 || destination.stack == 7 || destination.stack == 9) return;
                     selectedCard = foundCard;
                 }
-
 			}
 		}
 
@@ -120,11 +108,32 @@ BoardPos destination = getPositionForCard(foundCard);
 
             if(Physics.Raycast(ray, out hit, 100.0f))
             {
-                if (hit.collider.gameObject != null)
-                {
+				// check if the card is in hand or caravan.
+				GameObject foundObject = hit.collider.gameObject;
+
+				if (foundObject != null)
+				{
+					// Discard a card in hand.
+					if (board.boardPositions[6] == foundObject.transform.parent.gameObject)
+					{
+						board.makeMove(8, 0, 6, -1, false); // Get a new card.
+
+						List<Card> handCards = board.getStackById(6);
+						// With all the cards in our hand find the one we want gone.
+						for (int index = 0; index < handCards.Count; ++index)
+						{
+							if (handCards[index].gameObject == foundObject)
+							{
+								board.discard(6, index); // Then remove the selected card.
+								return;
+							}
+						}
+					}
+
+					// Disband caravan.
                     for (int i = 0; i != 3; i++)
                     {
-                        if (board.boardPositions[i] == hit.collider.gameObject.transform.parent.gameObject)
+						if (board.boardPositions[i] == foundObject.transform.parent.gameObject)
                         {
                             board.disband(i);
 
@@ -136,19 +145,4 @@ BoardPos destination = getPositionForCard(foundCard);
             }
         }
 	}
-
-    void CardFollowCursor()
-    {
-        if (selectedCard == null)
-        {
-            return;
-        }
-
-        Vector3 mousePosition = Input.mousePosition;
-        mousePosition.z = 6f;
-
-        originalPos = selectedCard.gameObject.transform.position;
-        selectedCard.gameObject.transform.position = Camera.main.ScreenToWorldPoint(mousePosition);
-        selectedCard.gameObject.collider.enabled = false;
-    }
 }
