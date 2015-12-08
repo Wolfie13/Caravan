@@ -17,7 +17,6 @@ public class Card : MonoBehaviour
     public const int CV_QUEEN = -5;
 
     private Color start_colour;
-    private Color selected_colour;
     private MeshRenderer mr;
 
     public static int getCaravanValue(int cardID) 
@@ -36,7 +35,7 @@ public class Card : MonoBehaviour
         }
         if (cardID > 40 && cardID < 45)
         {
-            return CV_JACK;
+            return 11; // Just because.
         }
         if (cardID > 44 && cardID < 49)
         {
@@ -54,8 +53,6 @@ public class Card : MonoBehaviour
 	{
         mr = this.gameObject.GetComponent<MeshRenderer>();
         mr.material.mainTexture = CardManager.getCardTexture(cardID);
-
-        selected_colour = new Color(0.0f, 0.0f, 50.0f);
 	}
 
     void OnMouseEnter()
@@ -66,14 +63,6 @@ public class Card : MonoBehaviour
 
     void OnMouseExit()
     {
-        if (mr.material.color != selected_colour)
-        {
-            mr.material.color = start_colour;
-        }
-    }
-
-    void OnMouseDown()
-    {
-        mr.material.color = selected_colour;
+        mr.material.color = start_colour;
     }
 }

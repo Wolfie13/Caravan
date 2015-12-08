@@ -19,11 +19,27 @@ public class CaravanBoard : MonoBehaviour
     private List<Card>[] hands = new List<Card>[2];
 
     private bool dirty = true;
+    public bool player_turn = true;
 
     public const int PLAYER_HAND = 6;
     public const int AI_HAND = 7;
     public const int PLAYER_DECK = 8;
     public const int AI_DECK = 9;
+
+    //Game Loop
+    void Update()
+    {
+        if (!player_turn)
+        {
+            ai_instance.greedyStep();
+        }       
+
+        if (dirty)
+        {
+            positionCards();
+            dirty = false;
+        }
+    }
 
     private static List<int> cardStack(List<Card> cardObjects)
     {
@@ -94,6 +110,7 @@ public class CaravanBoard : MonoBehaviour
             dest.Insert(destPos, cardToMove);
         }
         dirty = true;
+        player_turn = !player_turn;
     }
 
     public void discard(int stack, int idx)
@@ -101,16 +118,21 @@ public class CaravanBoard : MonoBehaviour
         Destroy(getStackById(stack)[idx]);
         getStackById(stack).RemoveAt(idx);
         dirty = true;
+        player_turn = !player_turn;
     }
 
     public void disband(int stack)
     {
         foreach (Transform child in boardPositions[stack].transform)
         {
-            Destroy(child);
+            if (child.gameObject.GetComponent<Card>() != null)
+            {
+                Destroy(child.gameObject);
+            }
         }
         getStackById(stack).Clear();
         dirty = true;
+        player_turn = !player_turn;
     }
 
     void Start()
@@ -138,22 +160,6 @@ public class CaravanBoard : MonoBehaviour
     }
     CaravanAI ai_instance = null;
     // Update is called once per frame
-    void Update()
-    {   
-             
-
-        if (Input.GetButtonDown("Fire1"))
-        {
-            ai_instance.greedyStep();
-        }
-
-        if (dirty)
-        {
-            positionCards();
-            dirty = false;
-        }
-    }
-
 
     void organizeStack(List<Card> stack, int num, bool hidden, bool dontSpread = false)
     {
@@ -236,6 +242,4 @@ public class CaravanBoard : MonoBehaviour
         }
         return result;
     }
-
-
 }

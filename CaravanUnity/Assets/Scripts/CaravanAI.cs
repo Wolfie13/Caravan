@@ -12,7 +12,6 @@ using System.Text;
 
 class CaravanAI
 {
-
     private CaravanBoard board;
     int turnNumber;
 
@@ -116,7 +115,7 @@ class CaravanAI
 
         public void execute(CaravanBoard board)
         {
-            UnityEngine.Debug.Log(this.type + " s:" + sourceStack + ":" + sourceIdx + " d:" + destStack + ":" + destIdx);
+            //UnityEngine.Debug.Log(this.type + " s:" + sourceStack + ":" + sourceIdx + " d:" + destStack + ":" + destIdx);
             switch (type)
             {
                 case Type.Disband:
