@@ -59,7 +59,7 @@ public class CaravanPlayer : MonoBehaviour
 			if (Physics.Raycast(ray, out hit, 100f))
 			{
                 Card foundCard = (Card)hit.collider.gameObject.GetComponent<Card>();
-
+BoardPos destination = getPositionForCard(foundCard);
 				// Here we'll check if we have a card already.
 				// If we do have a card we'll check where we're putting it.
                 if (selectedCard != null)
@@ -69,21 +69,30 @@ public class CaravanPlayer : MonoBehaviour
                     BoardPos source = getPositionForCard(selectedCard);
                     if (foundCard != null)
                     {
-                        BoardPos destination = getPositionForCard(foundCard);
-                        board.makeMove(source.stack, source.pos, destination.stack, destination.pos);
+                        // Check if the current card is a King, Queen.
+
+                        
+                        board.makeMove(source.stack, source.pos, destination.stack, destination.pos + 1, false);
+                        board.makeMove(8, 0, 6, 0); // -1 put it at the bottom.
                                                 
                         selectedCard = null;
                         return;
-
                     }
 
                     if (hit.collider.gameObject != null)
                     {
+                        if (selectedCard.caravanValue() == Card.CV_KING || selectedCard.caravanValue() == Card.CV_QUEEN)
+                        {
+                            selectedCard = null;
+                            return;
+                        }
+                        
                         for (int i = 0; i != 6; i++)
                         {
                             if (board.boardPositions[i] == hit.collider.gameObject.transform.parent.gameObject)
                             {
-                                board.makeMove(source.stack, source.pos, i, -1);
+                                board.makeMove(source.stack, source.pos, i, -1, false);
+                                board.makeMove(8, 0, 6, -1);
 
                                 selectedCard = null;
                                 return;
@@ -94,6 +103,10 @@ public class CaravanPlayer : MonoBehaviour
 
                 if (foundCard != null && selectedCard == null)
                 {
+                    if(destination.stack < 6 || destination.stack == 7 || destination.stack == 9)
+                    {
+                        return;
+                    }
                     selectedCard = foundCard;
                 }
 

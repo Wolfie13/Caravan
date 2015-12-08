@@ -35,7 +35,7 @@ public class Card : MonoBehaviour
         }
         if (cardID > 40 && cardID < 45)
         {
-            return 11; // Just because.
+            return 11;
         }
         if (cardID > 44 && cardID < 49)
         {

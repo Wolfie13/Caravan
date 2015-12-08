@@ -28,11 +28,18 @@ public static class CaravanUtil
 		return result;
 	}
 
-	private static bool winningCaravan(List<int> stack)
+	public static bool winningCaravan(List<int> stack)
 	{
 		int val = caravanValue(stack);
 		return val > 20 && val < 27;
 	}
+
+    public static bool winningCaravan(List<int> stack, List<int> opposingStack)
+    {
+        int val1 = caravanValue(stack);
+        int val2 = caravanValue(opposingStack);
+        return val1 > 20 && val1 < 27 && val1 > val2;
+    }
 	
 	public static int cardValue(List<int> stack, int idx)
 	{
@@ -64,6 +71,7 @@ public static class CaravanUtil
 		}
 		return result;
 	}
+
 	
 	private static float heuristicForStack(List<int> stack, List<int> opposingStack)
 	{
@@ -73,7 +81,7 @@ public static class CaravanUtil
         //If stack is between 20 - 27 and bigger than the opposing stack rturn large value for heuristic
         if (stack_value >= 20 && stack_value <= 27 && stack_value > opposing_stack_value)
         {
-            return 5000.0f;
+            return 500.0f;
         }
 		//If stack is below 20, scale heuristic from 0 - 20
 		if (stack_value <= 21) 
@@ -85,6 +93,12 @@ public static class CaravanUtil
 		{
 			return -20f;
 		}
+
+        if(opposing_stack_value < 20 && opposing_stack_value > 27)
+        {
+            return 30.0f;
+        }
+
 		return 0;
 	}
 	

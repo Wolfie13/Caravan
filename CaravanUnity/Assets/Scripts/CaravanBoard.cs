@@ -19,25 +19,68 @@ public class CaravanBoard : MonoBehaviour
     private List<Card>[] hands = new List<Card>[2];
 
     private bool dirty = true;
-    public bool player_turn = true;
+    private bool AI_turn = false;
+    private bool game_over = false;
 
     public const int PLAYER_HAND = 6;
     public const int AI_HAND = 7;
     public const int PLAYER_DECK = 8;
     public const int AI_DECK = 9;
 
+    CaravanAI ai_instance = null;
+
+    //Use this for intialization
+    void Start()
+    {
+        caravans = new Dictionary<int, List<Card>>();
+        for (int i = 0; i != 6; i++)
+        {
+            caravans.Add(i, new List<Card>());
+        }
+
+        for (int i = 0; i != 2; i++)
+        {
+            decks[i] = getDeck();
+            hands[i] = new List<Card>();
+            for (int j = 0; j != 5; j++)
+            {
+                int srcPos = decks[i].Count - 1;
+                Card cardToMove = decks[i][srcPos];
+                decks[i].RemoveAt(srcPos);
+                hands[i].Add(cardToMove);
+            }
+        }
+
+        ai_instance = new CaravanAI(this);
+    }
+
     //Game Loop
     void Update()
     {
-        if (!player_turn)
+        if(game_over)
         {
-            ai_instance.greedyStep();
-        }       
+            Application.LoadLevel(Application.loadedLevel);
+        }
 
-        if (dirty)
+        if (!game_over)
         {
-            positionCards();
-            dirty = false;
+            if (AI_turn)
+            {
+                ai_instance.greedyStep();
+            }
+
+            if (dirty)
+            {
+                positionCards();
+                dirty = false;
+            }
+
+            int winnar = CheckWin();
+            if (winnar != 0)
+            {
+                UnityEngine.Debug.Log("Game Over: " + winnar);
+                game_over = true;
+            }
         }
     }
 
@@ -94,7 +137,7 @@ public class CaravanBoard : MonoBehaviour
         return stack;
     }
 
-    public void makeMove(int stack, int srcPos, int destination, int destPos)
+    public void makeMove(int stack, int srcPos, int destination, int destPos, bool finishTurn = true)
     {
         List<Card> source = getStackById(stack);
         List<Card> dest = getStackById(destination);
@@ -110,7 +153,10 @@ public class CaravanBoard : MonoBehaviour
             dest.Insert(destPos, cardToMove);
         }
         dirty = true;
-        player_turn = !player_turn;
+        if (finishTurn)
+        {
+            AI_turn = !AI_turn;
+        }
     }
 
     public void discard(int stack, int idx)
@@ -118,7 +164,7 @@ public class CaravanBoard : MonoBehaviour
         Destroy(getStackById(stack)[idx]);
         getStackById(stack).RemoveAt(idx);
         dirty = true;
-        player_turn = !player_turn;
+        AI_turn = !AI_turn;
     }
 
     public void disband(int stack)
@@ -132,34 +178,8 @@ public class CaravanBoard : MonoBehaviour
         }
         getStackById(stack).Clear();
         dirty = true;
-        player_turn = !player_turn;
-    }
-
-    void Start()
-    {
-        caravans = new Dictionary<int, List<Card>>();
-        for (int i = 0; i != 6; i++)
-        {
-            caravans.Add(i, new List<Card>());
-        }
-
-        for (int i = 0; i != 2; i++)
-        {
-            decks[i] = getDeck();
-            hands[i] = new List<Card>();
-            for (int j = 0; j != 5; j++)
-            {
-                int srcPos = decks[i].Count - 1;
-                Card cardToMove = decks[i][srcPos];
-                decks[i].RemoveAt(srcPos);
-                hands[i].Add(cardToMove);
-            }
-        }
-
-        ai_instance = new CaravanAI(this);
-    }
-    CaravanAI ai_instance = null;
-    // Update is called once per frame
+        AI_turn = !AI_turn;
+    }    
 
     void organizeStack(List<Card> stack, int num, bool hidden, bool dontSpread = false)
     {
@@ -168,8 +188,8 @@ public class CaravanBoard : MonoBehaviour
             boardPositions[num].transform.rotation = Quaternion.AngleAxis(180, Vector3.forward);
         }
 
-        bool topCaravan = num / 6 < 0.5f;
-        topCaravan &= num < 6;
+        bool topCaravan = num / 6.0f >= 0.5f;
+        topCaravan &= num <= 5;
 
         for (int i = 0; i != stack.Count; i++)
         {
@@ -241,5 +261,34 @@ public class CaravanBoard : MonoBehaviour
             result.Add(removedCard);
         }
         return result;
+    }
+
+    //-1 = ai win, 0 = draw, 1 = player win
+    private int CheckWin()
+    {
+        Dictionary<int, List<int>> caravans = this.getGameState();
+        bool playerWin = true;
+        for(int i = 0; i < 3; i++)
+        {
+            playerWin &= CaravanUtil.winningCaravan(caravans[i], caravans[i + 3]);
+        }
+        if (playerWin)
+        {
+            //player won
+            return 1;
+        }
+
+        bool aiWin = true;
+        for (int i = 0; i < 3; i++)
+        {
+            aiWin &= CaravanUtil.winningCaravan(caravans[i + 3], caravans[i]);
+        }
+        if (aiWin)
+        {
+            //ai won
+            return -1;
+        }
+
+        return 0;
     }
 }

@@ -281,6 +281,8 @@ GameObject:
   m_Component:
   - 4: {fileID: 459446}
   - 114: {fileID: 11459446}
+  - 114: {fileID: 11478376}
+  - 114: {fileID: 11478378}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -298,7 +300,7 @@ GameObject:
   - 4: {fileID: 475068}
   m_Layer: 0
   m_Name: Caravan1
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -589,7 +591,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 109120}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -.25, z: 0}
+  m_LocalPosition: {x: .129999995, y: -.25, z: 0}
   m_LocalScale: {x: 1.257074, y: .128124997, z: 2.35362196}
   m_Children: []
   m_Father: {fileID: 475072}
@@ -1326,6 +1328,36 @@ MonoBehaviour:
   - {fileID: 175082}
   - {fileID: 175084}
   - {fileID: 175086}
+  player_turn: 0
+--- !u!114 &11478376
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 159446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9b1ddbc07e7b8c48bd7c4d7e74d657d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CaravanTexts:
+  - {fileID: 109096}
+  - {fileID: 109098}
+  - {fileID: 109100}
+  - {fileID: 109104}
+  - {fileID: 109102}
+  - {fileID: 109106}
+--- !u!114 &11478378
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 159446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb378728de8c6344c86f194cf4d91475, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
